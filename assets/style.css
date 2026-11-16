@@ -216,11 +216,12 @@ h1, h2, h3 { line-height: 1.2; text-wrap: balance; margin: 0; font-weight: 600; 
 .tile:hover { transform: rotate(0) scale(1.02); }
 
 .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 30px 44px; align-items: start; }
-.ask { border: 1.5px solid var(--ink); background: var(--card); padding: 20px; display: grid; gap: 12px; }
+.ask { border: 1.5px solid var(--ink); background: var(--card); padding: 20px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .ask h2 { font-size: 1.1rem; }
 .ask p { margin: 0; color: var(--muted); font-size: 15px; }
-.ask label { display: grid; gap: 4px; font: 500 13px var(--text); color: var(--muted); }
-.ask input, .ask textarea { font: 16px var(--text); color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); padding: 8px 10px; border-radius: 0; width: 100%; }
+.ask label { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; font: 500 13px var(--text); color: var(--muted); }
+.ask input, .ask textarea { font: 16px var(--text); color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); padding: 8px 10px; border-radius: 0; width: 100%; max-width: 100%; }
+.ask textarea { resize: vertical; }
 .ask input:focus, .ask textarea:focus { outline: none; border-color: var(--ink); }
 .ask .btn { justify-self: start; cursor: pointer; margin-top: 4px; }
 .ways { margin-top: 26px; }
