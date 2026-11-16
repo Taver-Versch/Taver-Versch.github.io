@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:type" content="website">
+<link rel="icon" href="assets/sprites/cat/sit.png">
+<script>
+var keep = {
+  bag: function () { try { return JSON.parse(window.name) || {}; } catch (e) { return {}; } },
+  get: function (key, session) {
+    try { var v = (session ? sessionStorage : localStorage).getItem(key); if (v !== null) return v; } catch (e) {}
+    return keep.bag()[key];
+  },
+  set: function (key, value, session) {
+    try { (session ? sessionStorage : localStorage).setItem(key, value); } catch (e) {}
+    var b = keep.bag(); b[key] = String(value); window.name = JSON.stringify(b);
+  }
+};
+var night = keep.get("theme") === "dark", root = document.documentElement;
+root.dataset.mode = night ? "dark" : "light";
+root.style.colorScheme = night ? "dark" : "light";
+root.style.background = night ? "#14171b" : "#fbfaf5";
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Pixelify+Sans:wght@400;500&family=Silkscreen&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+{{fonts}}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="brand" href="index.html">{{name}}</a>
+  <nav class="stage" aria-label="Pages">
+    <button class="theme" type="button" aria-label="Switch between day and night"></button>
+    <canvas class="lane" aria-hidden="true"></canvas>
+    <div class="ground"><span class="cap left"></span><div class="tabs">{{nav}}</div><span class="cap right"></span></div>
+  </nav>
+  <div class="side">
+    <a class="contact{{contact_active}}" href="contact.html">Contact</a>
+  </div>
+</header>
+<main class="wrap" id="main">
+{{content}}
+</main>
+{{footer}}
+<script src="assets/site.js"></script>
+<script src="assets/walker.js"></script>
+</body>
+</html>
