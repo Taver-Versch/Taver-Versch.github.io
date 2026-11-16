@@ -46,11 +46,20 @@
   let hovered = null;
   const spot = () => (hovered ? center(hovered) : home());
   const go = (t) => { hovered = t; target = spot(); running = Math.abs(target - x) > step() * 1.5; };
+  let finger = false, leaving = null;
+  const leave = () => { if (leaving) { const href = leaving.href; leaving = null; location.href = href; } };
+  addEventListener("pointerdown", (e) => { finger = e.pointerType !== "mouse"; }, true);
   tabs.forEach((t) => {
     t.addEventListener("pointerenter", () => go(t));
     t.addEventListener("focus", () => go(t));
-    t.addEventListener("pointerleave", () => go(null));
-    t.addEventListener("blur", () => go(null));
+    t.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") go(null); });
+    t.addEventListener("blur", () => { if (!leaving) go(null); });
+    t.addEventListener("click", (e) => {
+      if (!finger || still || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      e.preventDefault();
+      leaving = t; go(t);
+      setTimeout(leave, 1500);
+    });
   });
   addEventListener("pagehide", () => keep.set("walker-x", x / stage.offsetWidth, true));
   addEventListener("pageshow", (e) => { if (e.persisted && x !== undefined) go(null); });
@@ -104,6 +113,7 @@
       pose = (running ? "run" : "walk") + ((tick >> (running ? 2 : 3)) % 2 + 1);
     } else {
       x = target; idle++;
+      if (leaving) leave();
       if (still) pose = "stand";
       else if (idle > 60 * 8) pose = "sit";
       else if (idle % 200 > 192) pose = "blink";

@@ -29,7 +29,6 @@
     const play = (run, done) => {
       const cmd = run.querySelector(".typed-cmd"), text = cmd.textContent, out = [...run.children].slice(1);
       run.hidden = false;
-      if (still) { toBottom(); return done(); }
       out.forEach((o) => { o.hidden = true; });
       let i = 0;
       const key = () => {
@@ -40,7 +39,7 @@
       cmd.textContent = ""; key();
     };
     const intro = [...screen.querySelectorAll(".run")];
-    if (!still) intro.forEach((r) => { r.hidden = true; });
+    intro.forEach((r) => { r.hidden = true; });
     const next = () => (intro.length ? play(intro.shift(), next) : (cmds.hidden = false));
     next();
     let busy = false;
@@ -69,7 +68,7 @@
       n += back ? -1 : 1;
       setTimeout(tick, back ? 35 : 70);
     };
-    if (still) roles.textContent = list[0]; else tick();
+    tick();
   }
 
   const filters = document.querySelector(".filters");
