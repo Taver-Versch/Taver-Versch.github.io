@@ -16,8 +16,8 @@ TYPED = re.compile(r"\{([^{}]*\|[^{}]*)\}")
 FRONT = re.compile(r"\A---\s*\n(.*?)\n---\s*\n?(.*)\Z", re.S)
 PREFIX = re.compile(r"^(\d+)[-_ ]*")
 IMAGES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
-NOTE_COLORS = {"yellow": "#fff59d", "pink": "#ffd1dc", "green": "#c8f0d4", "blue": "#c9e4ff",
-               "orange": "#ffd8a8", "purple": "#e2d4ff"}
+NOTE_COLORS = {"yellow": "oklch(95.88% 0.1093 102.6)", "pink": "oklch(90.32% 0.0535 2.2)", "green": "oklch(91.91% 0.0561 154.6)", "blue": "oklch(90.77% 0.0469 248.3)",
+               "orange": "oklch(90.39% 0.0758 72.4)", "purple": "oklch(89.48% 0.0601 300.1)"}
 
 ICONS = {"python": "python", "django": "django", "typescript": "typescript", "javascript": "javascript",
          "java": "openjdk", "c#": "csharp", "docker": "docker", "aws": "amazonaws", "unity": "unity",
@@ -141,8 +141,8 @@ def collage(folder, out, skip=None):
         if p.suffix == ".md" and p.name != "index.md":
             e = read(p)
             color = e.get("color", "").lower()
-            if color and color not in NOTE_COLORS and not re.fullmatch(r"#[0-9a-f]{3}|#[0-9a-f]{6}", color):
-                sys.exit(f"{p}: color can be {', '.join(NOTE_COLORS)} or a hex code like #ffd1dc.")
+            if color and color not in NOTE_COLORS and not re.fullmatch(r"#[0-9a-f]{3}|#[0-9a-f]{6}|oklch\([\d.%\s/]+\)", color):
+                sys.exit(f"{p}: color can be {', '.join(NOTE_COLORS)}, a hex code like #ffd1dc, or oklch(88% 0.06 0).")
             style = f' style="--paper: {NOTE_COLORS.get(color, color)}"' if color else ""
             tiles.append(f'<div class="tile note"{style}><h3>{esc(e["title"])}</h3>{e["body"]}</div>')
         elif p.suffix.lower() in IMAGES and p != skip:

@@ -89,7 +89,7 @@
     const u = SCALE, ox = Math.round(cx), cy = canvas.height - 15 * u;
     const snap = (v, from) => from + Math.round((v - from) / u) * u;
     r *= u / 3;
-    for (const [color, grow] of [["rgba(150,160,170," + alpha + ")", u], ["rgba(255,255,255," + alpha + ")", 0]]) {
+    for (const [color, grow] of [["oklch(70.09% 0.0186 248.1 / " + alpha + ")", u], ["oklch(100% 0 0 / " + alpha + ")", 0]]) {
       g.fillStyle = color;
       for (let a = 0; a < 10; a++) {
         const px = snap(ox + Math.cos(a * 0.628) * r, ox), py = snap(cy + Math.sin(a * 0.628) * r * 0.9, cy);
