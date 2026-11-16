@@ -2,8 +2,9 @@
 title: Hobbies
 color: purple
 ---
-- Gaming with friends (Nebraska Esports Club)
-- Making games with Amtav Games
+- Gaming with friends, both casual and competative (Esports Club)
+- Going to the Gym
+- Riding/Working on my motorcycle
 - Tinkering with my homelab
-- Coding Club competitive programming
-- Global Friends of Japan
+- Game development
+- Eating good food
