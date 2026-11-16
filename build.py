@@ -98,7 +98,12 @@ def entries(folder):
     items = []
     for p in sorted(folder.iterdir(), key=order):
         if p.suffix == ".md" and p.name != "index.md":
-            items.append(read(p))
+            e = read(p)
+            pic = next((p.with_suffix(s) for s in sorted(IMAGES) if p.with_suffix(s).is_file()), None)
+            if pic:
+                e["images"] = [pic]
+                e.setdefault("image", f"media/{e['slug']}/{pic.name}")
+            items.append(e)
         elif p.is_dir():
             md = p / "index.md" if (p / "index.md").exists() else next(iter(sorted(p.glob("*.md"))), None)
             if md:
@@ -119,8 +124,8 @@ def bubbles(e):
     return f'<div class="tags">{"".join(out)}</div>' if out else ""
 
 
-def outside_link(e):
-    return f'<a href="{esc(e["link"])}">{esc(e.get("link_text", "View on GitHub"))}</a>' if e.get("link") else ""
+def outside_link(e, text="View on GitHub"):
+    return f'<a href="{esc(e["link"])}">{esc(e.get("link_text", text))}</a>' if e.get("link") else ""
 
 
 def polaroid(p, out, text, note=""):
@@ -164,6 +169,16 @@ def card(e, pictures=False):
             + (f'<p class="links">{" · ".join(links)}</p>' if links else "") + "</article>")
 
 
+def badge(e):
+    art = (f'<img class="badge-art" src="{esc(e["image"])}" alt="" loading="lazy">' if e.get("image")
+           else '<div class="badge-art blank" aria-hidden="true"></div>')
+    status = f'<span class="status-pill">{esc(e["status"])}</span>' if e.get("status") else ""
+    link = f'<a class="btn view" href="{esc(e["link"])}">{esc(e.get("link_text", "View"))}</a>' if e.get("link") else ""
+    pending = " pending" if e.get("status") else ""
+    return (f'<article class="card badge{pending} reveal" data-tags="{esc("|".join(names(e.get("tags"))))}">{art}<h3>{esc(e["title"])}</h3>'
+            + (f'<div class="meta">{esc(e["meta"])}</div>' if e.get("meta") else "") + status + link + "</article>")
+
+
 def teaser(label, e, href, more_href, more_text):
     img = f'<img class="shot" src="{esc(e["image"])}" alt="">' if e.get("image") else ""
     blurb = e.get("summary") or e.get("meta", "")
@@ -185,8 +200,11 @@ def listing(title, section, items, cfg):
     tools = (f'<div class="filters"><input type="search" class="search" placeholder="Search {section}" aria-label="Search {section}">'
              f'<button type="button" class="chip on" data-tag="">All</button>{chips}</div>') if len(items) > 3 else ""
     intro = f'<div class="body lead">{cfg["body"]}</div>' if cfg.get("body", "").strip() else ""
+    badges = cfg.get("layout", "list") == "badges"
+    if cfg.get("layout", "list") not in ("list", "badges"):
+        sys.exit(f"{section}/index.md: layout can be list or badges.")
     return (f'<h1 class="page-title">{esc(title)} <span class="count">{len(items)}</span></h1>{intro}{tools}'
-            f'<div class="grid">{"".join(card(e, yes(cfg.get("pictures"))) for e in items)}</div>'
+            f'<div class="grid{" badges" if badges else ""}">{"".join(badge(e) if badges else card(e, yes(cfg.get("pictures"))) for e in items)}</div>'
             + ('<p class="empty" hidden>Nothing matches that.</p>' if items else '<p class="empty">Nothing here yet.</p>'))
 
 
@@ -198,13 +216,16 @@ def build(content=ROOT / "content", out=ROOT / "_site", templates=ROOT / "templa
     about_dir = dirs["about"]
     about = read(about_dir / "index.md")
     sections = {s: entries(p) for s, p in dirs.items() if s not in SPECIAL}
-    cfgs = {s: read(dirs[s] / "index.md", folder=dirs[s]) if (dirs[s] / "index.md").exists() else {} for s in sections}
+    cfgs = {s: read(dirs[s] / "index.md") if (dirs[s] / "index.md").exists() else {} for s in sections}
+    for cfg in cfgs.values():
+        if cfg.get("title") == "Index":
+            del cfg["title"]
     label = lambda s: cfgs.get(s, {}).get("title") or s.replace("-", " ").title()
     clash = {"index", "404", "media", "assets"} & set(sections)
     if clash:
         sys.exit(f"content/: a folder can't be named '{clash.pop()}'. Rename it.")
     name = about["title"]
-    tabs = [("index" if s == "home" else s, "Home" if s == "home" else label(s))
+    tabs = [("index" if s == "home" else s, "Home" if s == "home" else cfgs.get(s, {}).get("tab") or label(s))
             for s in dirs if s != "contact"]
     out.mkdir(parents=True, exist_ok=True)
     for old in out.iterdir():
@@ -303,6 +324,9 @@ def build(content=ROOT / "content", out=ROOT / "_site", templates=ROOT / "templa
     write("index", name, hero + (f'<div class="teasers">{"".join(teasers)}</div>' if teasers else ""))
 
     info_entries = entries(about_dir / "info")
+    cert_entries = entries(about_dir / "certifications")
+    certs = (f'<div class="stack"><div class="card full certs"><h3>Certifications</h3>'
+             f'<div class="grid badges">{"".join(badge(e) for e in cert_entries)}</div></div></div>') if cert_entries else ""
     info = "".join(card(e) for e in info_entries)
     pics = sorted((f for f in about_dir.iterdir() if f.suffix.lower() in IMAGES), key=order)
     photo = about_dir / about["photo"] if about.get("photo") else (pics[0] if pics else None)
@@ -311,8 +335,9 @@ def build(content=ROOT / "content", out=ROOT / "_site", templates=ROOT / "templa
     side = polaroid(photo, out, about.get("photo_caption") or caption(photo), about.get("photo_note", "")) if photo else ""
     blocks = {"intro": f'<div class="intro"><div class="body">{about["body"]}</div>{side}</div>',
               "notes": collage(about_dir / "notes", out) if (about_dir / "notes").is_dir() else "",
-              "info": f'<div class="stack">{info}</div>' if info else ""}
-    layout = names(about.get("layout", "intro, notes, info"))
+              "info": f'<div class="stack">{info}</div>' if info else "",
+              "certs": certs}
+    layout = names(about.get("layout", "intro, notes, info, certs"))
     if set(layout) - set(blocks):
         sys.exit(f"content/{about_dir.name}/index.md: layout can only list {', '.join(blocks)}.")
     write("about", f"About · {name}", '<h1 class="page-title">About</h1>' + "".join(blocks[b] for b in layout))
@@ -362,7 +387,7 @@ def build(content=ROOT / "content", out=ROOT / "_site", templates=ROOT / "templa
           '<p>The link is old or mistyped. The cat and I looked everywhere.</p>'
           '<a class="btn primary" href="index.html">Back to the home page</a></div>', active="none")
 
-    for items in [*sections.values(), info_entries]:
+    for items in [*sections.values(), info_entries, cert_entries]:
         for e in items:
             for img in e["images"]:
                 (out / "media" / e["slug"]).mkdir(parents=True, exist_ok=True)

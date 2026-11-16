@@ -5,7 +5,7 @@ email: taverversch@gmail.com
 linkedin: https://www.linkedin.com/in/taverversch/
 github: https://github.com/Taver-Versch
 studio: https://amtavgames.com
-layout: intro, notes, info
+layout: intro, notes, info, certs
 photo: mila.png
 photo_caption: My cat, Mila!
 photo_note: Her nose is actually black, but the pixel art looked weird so I went with pink :P

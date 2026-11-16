@@ -179,6 +179,16 @@ h1, h2, h3 { line-height: 1.2; text-wrap: balance; margin: 0; font-weight: 600; 
 .card.row:has(> .shot) > .meta { grid-column: 3; }
 .card.row > .shot { grid-column: 1; grid-row: 1 / span 6; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border: 1px solid var(--line); background: var(--card); }
 .lead { color: var(--muted); margin-bottom: 18px; }
+.certs .grid.badges { margin-top: 14px; }
+.grid.badges { grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 16px; }
+.grid .card.badge { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; padding: 20px 14px 16px; border: 1px solid var(--line); background: var(--card); }
+.badge-art { width: 112px; height: 112px; object-fit: contain; margin-bottom: 6px; }
+.badge-art.blank { background: var(--line); clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%); }
+.card.badge.pending .badge-art { filter: grayscale(1); opacity: .55; }
+.card.badge h3 { font-size: .98rem; }
+.card.badge .meta { font-size: 12.5px; }
+.card.badge .view { margin-top: auto; padding: 4px 18px; font-size: 13px; }
+.status-pill { font: 500 11px var(--text); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); border: 1px solid currentColor; padding: 1px 8px; }
 .stretch::after { content: ""; position: absolute; inset: 0; }
 .card.row .links, .card.row .tags { position: relative; z-index: 1; }
 

@@ -8,7 +8,7 @@ It's built with my own small static site generator. Every page comes from a fold
 ```
 content/          the whole site, written in Markdown
   01-home/        the home page terminal
-  02-about/       about text, sticky notes, education and skills
+  02-about/       about text, sticky notes, education, skills, and certification badges
   03-experience/  one entry per job
   04-projects/    one folder per project, with its images
   05-posts/       write-ups
