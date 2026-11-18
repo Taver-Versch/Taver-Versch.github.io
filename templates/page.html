@@ -21,7 +21,9 @@ var keep = {
     var b = keep.bag(); b[key] = String(value); window.name = JSON.stringify(b);
   }
 };
-var night = keep.get("theme") === "dark", root = document.documentElement;
+var saved = keep.get("theme"), root = document.documentElement;
+// no saved choice yet: follow the device setting
+var night = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
 root.dataset.mode = night ? "dark" : "light";
 root.style.colorScheme = night ? "dark" : "light";
 root.style.background = night ? "oklch(20.32% 0.0093 255.6)" : "oklch(98.45% 0.0067 97.3)";
