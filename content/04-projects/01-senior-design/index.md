@@ -27,7 +27,9 @@ On top of the PM role, I also work on the code.
 
 - I brought the wake word and STT pipeline into the app (openWakeWord with a custom "Hey Husker" model, and Moonshine for STT), and I wired the voice commands through to the backend so the user actually moves.
 - I have also fixed bugs from VR buttons lagging on the Apple Vision Pro to the menu layout breaking for collaborators.
+- Refined prompting for the LLM to keep movement within bounds of the room. 
+- Various other small fixes/bugs. Primarily on the first server (Frontend Server).
 
 ---
 
-**Next up:** Going forward, I plan to add avatars for every user (with hands for VR users) and make sure livestream followers can see both the host's view and the assistant's captions.
+**Next up:** Going forward, I plan to add avatars for every user (with hands for VR users). In the process of making experimental/optional features, I am constantly contacting the Sponsor to ensure they are satisfied with the direction I am going. 
